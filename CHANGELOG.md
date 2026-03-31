@@ -1,10 +1,8 @@
 # Changelog
 
-## 1.11 - 2026-03-31
+## 1.10 - 2026-03-31
 - Updated Fabric Loader to 0.18.4 and Fabric API to 0.115.1+1.21.1.
 - Fixed Minecraft version dependency to exact 1.21.1 for better compatibility.
-
-## 1.10 - 2026-03-31
 - Added new command `chatdelay` with subcommands: `delay`, `duplicate`, and `color`.
 - Ensures warning color is normalized and defaults to `red` when config color is invalid.
 - Added initialization log for config values.
