@@ -1,8 +1,16 @@
+.gradle/
+build/
+out/
+run/
+*.iml
+.idea/
+
+# Fabric generated
+remappedSrc/
+
 # Local environment files with secrets
 .env
 .env.*
 !.env.example
-
-# Optional local token files
 *.token
 *.secrets
