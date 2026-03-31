@@ -17,6 +17,11 @@ export GITHUB_REMOTE_URL="https://github.com/OWNER/REPO.git"
 ./setup_github_remote.sh
 ```
 
+## Security note
+
+- **Do not commit real GitHub tokens to this repository or any tracked file.**
+- Keep secrets in environment variables or your CI/provider secret manager.
+
 ## Notes
 
 - The script only performs `git push --dry-run`; it does not create or publish a GitHub Release.
