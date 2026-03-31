@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvents;
@@ -32,13 +33,58 @@ public final class ChatDelayModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         this.config = ChatDelayConfig.load();
+        LOGGER.info("ChatDelayMod initialized. Config: delay={}, duplicate-block={}, color={}", config.getDelaySeconds(), config.isBlockImmediateDuplicate(), config.getWarningColor());
         ClientSendMessageEvents.ALLOW_CHAT.register(this::allowChatMessage);
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-            dispatcher.register(ClientCommandManager.literal("chatdelay").executes(context -> {
-                context.getSource().sendFeedback(Text.literal(buildStatusMessage()));
-                return 1;
-            }))
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerChatDelayCommand(dispatcher));
+    }
+
+    private void registerChatDelayCommand(com.mojang.brigadier.CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommandManager.literal("chatdelay")
+            .executes(context -> sendStatus(context))
+            .then(ClientCommandManager.literal("delay")
+                .then(ClientCommandManager.argument("seconds", DoubleArgumentType.doubleArg(0.0))
+                    .executes(context -> setDelay(context, DoubleArgumentType.getDouble(context, "seconds"))))
+            )
+            .then(ClientCommandManager.literal("duplicate")
+                .then(ClientCommandManager.literal("on").executes(context -> setDuplicate(context, true)))
+                .then(ClientCommandManager.literal("off").executes(context -> setDuplicate(context, false)))
+            )
+            .then(ClientCommandManager.literal("color")
+                .then(ClientCommandManager.argument("color", StringArgumentType.word())
+                    .executes(context -> setColor(context, StringArgumentType.getString(context, "color"))))
+            )
         );
+    }
+
+    private int sendStatus(com.mojang.brigadier.context.CommandContext<FabricClientCommandSource> context) {
+        context.getSource().sendFeedback(Text.literal(buildStatusMessage()));
+        return 1;
+    }
+
+    private int setDelay(com.mojang.brigadier.context.CommandContext<FabricClientCommandSource> context, double delaySeconds) {
+        config.setDelaySeconds(delaySeconds);
+        config.save();
+        context.getSource().sendFeedback(Text.literal("Chat delay set to " + config.getDelaySeconds() + "s."));
+        return 1;
+    }
+
+    private int setDuplicate(com.mojang.brigadier.context.CommandContext<FabricClientCommandSource> context, boolean block) {
+        config.setBlockImmediateDuplicate(block);
+        config.save();
+        context.getSource().sendFeedback(Text.literal("Immediate duplicate blocking " + (block ? "enabled" : "disabled") + "."));
+        return 1;
+    }
+
+    private int setColor(com.mojang.brigadier.context.CommandContext<FabricClientCommandSource> context, String colorName) {
+        String normalized = normalizeColorName(colorName);
+        if (normalized == null) {
+            context.getSource().sendFeedback(Text.literal("Unknown color: " + colorName + ". Use one of: " + getAllowedColors()));
+            return 0;
+        }
+        config.setWarningColor(normalized);
+        config.save();
+        context.getSource().sendFeedback(Text.literal("Warning color set to " + config.getWarningColor() + "."));
+        return 1;
     }
 
     private boolean allowChatMessage(String message) {
@@ -81,7 +127,7 @@ public final class ChatDelayModClient implements ClientModInitializer {
 
     public static String normalizeColorName(String colorName) {
         Formatting formatting = parseColor(colorName);
-        return formatting == null ? Formatting.RED.getName() : formatting.getName();
+        return formatting == null ? null : formatting.getName();
     }
 
     private static Formatting parseColor(String value) {

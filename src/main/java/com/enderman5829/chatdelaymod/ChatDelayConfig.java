@@ -30,7 +30,8 @@ public final class ChatDelayConfig {
             ChatDelayConfig cfg = GSON.fromJson(reader, ChatDelayConfig.class);
             if (cfg == null) cfg = new ChatDelayConfig();
             cfg.delaySeconds = Math.max(0.0, cfg.delaySeconds);
-            cfg.warningColor = ChatDelayModClient.normalizeColorName(cfg.warningColor);
+            String normalizedColor = ChatDelayModClient.normalizeColorName(cfg.warningColor);
+            cfg.warningColor = normalizedColor == null ? "red" : normalizedColor;
             cfg.save();
             return cfg;
         } catch (IOException | JsonParseException e) {
