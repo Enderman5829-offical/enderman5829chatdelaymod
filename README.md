@@ -31,3 +31,9 @@ export GITHUB_REMOTE_URL="https://github.com/OWNER/REPO.git"
 
 - The script only performs `git push --dry-run`; it does not create or publish a GitHub Release.
 - If no token is set, it still configures `origin` and skips permission testing.
+
+
+## Local secret workflow
+
+- Create a local `.env` from `.env.example` and keep it untracked.
+- If a token value is ever pasted into chat/logs, rotate/revoke it immediately in GitHub settings.
