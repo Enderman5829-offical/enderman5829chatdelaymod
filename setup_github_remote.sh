@@ -6,6 +6,7 @@ set -euo pipefail
 #   GITHUB_REPOSITORY="owner/repo" (preferred)
 #   GITHUB_REMOTE_URL="https://github.com/owner/repo.git"
 #   GITHUB_TOKEN or GH_TOKEN (optional, for authenticated dry-run push)
+#   CODEX_15784393821 (optional token fallback for this environment)
 
 if [[ "${1:-}" == "--help" ]]; then
   cat <<'HELP'
@@ -16,6 +17,7 @@ Environment variables:
   GITHUB_REMOTE_URL   full remote URL (https://github.com/owner/repo.git)
   GITHUB_TOKEN        GitHub token with repo push access (optional for setup, required for push test)
   GH_TOKEN            Fallback token if GITHUB_TOKEN is not set
+  CODEX_15784393821   Additional token fallback for this environment
 
 What this script does:
   1) Builds or reads the GitHub remote URL.
@@ -44,11 +46,11 @@ else
   echo "Added origin -> $remote_url"
 fi
 
-token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+token="${GITHUB_TOKEN:-${GH_TOKEN:-${CODEX_15784393821:-}}}"
 branch="$(git branch --show-current)"
 
 if [[ -z "$token" ]]; then
-  echo "No token detected (GITHUB_TOKEN/GH_TOKEN). Skipping dry-run push test."
+  echo "No token detected (GITHUB_TOKEN/GH_TOKEN/CODEX_15784393821). Skipping dry-run push test."
   echo "Remote configured successfully."
   exit 0
 fi
