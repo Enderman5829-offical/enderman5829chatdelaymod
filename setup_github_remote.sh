@@ -56,7 +56,7 @@ if [[ -z "$token" ]]; then
 fi
 
 # Authenticate only for this command by embedding token in remote URL.
-auth_url="${remote_url/https:\/\/github.com/https:\/\/${token}@github.com}"
+auth_url="${remote_url/https:\/\/github.com/https:\/\/x-access-token:${token}@github.com}"
 
 echo "Testing authenticated push permissions with dry-run on branch '$branch'..."
 git push --dry-run "$auth_url" "$branch"
