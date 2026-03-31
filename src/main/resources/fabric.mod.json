@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "chatdelaymod",
+  "version": "${version}",
+  "name": "Chat Delay Mod",
+  "description": "Client-side chat delay and anti-repeat guard to reduce self-spam.",
+  "authors": ["enderman5829"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.enderman5829.chatdelaymod.ChatDelayModClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21.1 <=1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
