@@ -35,6 +35,19 @@ jobs:
       - name: Build
         run: ./gradlew clean build
 
+      - name: Export release jar
+        run: |
+          chmod +x ./scripts/export-jar.sh
+          ./scripts/export-jar.sh
+
+      - name: Validate exported jar
+        run: |
+          JAR="$(ls build/download/*.jar | head -n 1)"
+          test -n "$JAR"
+          test -s "$JAR"
+          jar tf "$JAR" | grep -q 'fabric.mod.json'
+          jar tf "$JAR" | grep -q 'com/enderman5829/chatdelaymod/ChatDelayModClient.class'
+
       - name: Resolve release tag
         id: tag
         run: |
@@ -49,6 +62,6 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.value }}
           files: |
-            build/libs/*.jar
             build/devlibs/*.jar
+            build/download/*.jar
           generate_release_notes: true

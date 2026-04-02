@@ -34,8 +34,16 @@ public final class ChatDelayModClient implements ClientModInitializer {
     public void onInitializeClient() {
         this.config = ChatDelayConfig.load();
         LOGGER.info("ChatDelayMod initialized. Config: delay={}, duplicate-block={}, color={}", config.getDelaySeconds(), config.isBlockImmediateDuplicate(), config.getWarningColor());
-        ClientSendMessageEvents.ALLOW_CHAT.register(this::allowChatMessage);
+        
+        // Register custom command
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerChatDelayCommand(dispatcher));
+        
+        // Register chat message handler
+        ClientSendMessageEvents.ALLOW_CHAT.register(this::onSendChatMessage);
+    }
+    
+    private boolean onSendChatMessage(String messageText) {
+        return allowChatMessage(messageText);
     }
 
     private void registerChatDelayCommand(com.mojang.brigadier.CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -87,7 +95,7 @@ public final class ChatDelayModClient implements ClientModInitializer {
         return 1;
     }
 
-    private boolean allowChatMessage(String message) {
+    public boolean allowChatMessage(String message) {
         long now = System.currentTimeMillis();
         String trimmed = message.trim();
         if (config.isBlockImmediateDuplicate() && lastAcceptedMessage != null && lastAcceptedMessage.equals(trimmed)) {
