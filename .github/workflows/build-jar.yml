@@ -29,14 +29,9 @@ jobs:
       - name: Build
         run: ./gradlew clean build
 
-      - name: Export release jar
+      - name: Validate remapped jar
         run: |
-          chmod +x ./scripts/export-jar.sh
-          ./scripts/export-jar.sh
-
-      - name: Validate exported jar
-        run: |
-          JAR="$(ls build/download/*.jar | head -n 1)"
+          JAR="$(ls build/libs/chatdelaymod-*.jar | grep -v sources | head -n 1)"
           test -n "$JAR"
           test -s "$JAR"
           jar tf "$JAR" | grep -q 'fabric.mod.json'
@@ -47,6 +42,6 @@ jobs:
         with:
           name: chatdelaymod-jars
           path: |
+            build/libs/*.jar
             build/devlibs/*.jar
-            build/download/*.jar
           if-no-files-found: error
