@@ -7,8 +7,8 @@ set -euo pipefail
 #   GITHUB_REPOSITORY=owner/repo
 #   GITHUB_TOKEN or GH_TOKEN
 # Optional args:
-#   --tag v1.11
-#   --name "ChatDelayMod v1.11"
+#   --tag v1.10
+#   --name "ChatDelayMod v1.10"
 #   --repo owner/repo (overrides GITHUB_REPOSITORY)
 
 TAG=""

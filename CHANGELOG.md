@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.11 - 2026-05-09
+## 1.10 - 2026-05-09
 - Ported the mod build to Minecraft `26.1.2`, Fabric Loader `0.19.2`, Fabric API `0.148.0+26.1.2`, Loom `1.16`, Gradle `9.4.0`, and Java `25`.
 - Migrated the client source to Minecraft 26.1 unobfuscated/Mojang names and Fabric API 26.1 command naming.
 - Updated release/export helpers for 26.1.2 builds, which produce runtime jars in `build/libs` instead of `build/devlibs`.
